@@ -10,6 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Tic tac toe',
         home: Scaffold(
           backgroundColor: Colors.orange.shade300,
@@ -41,8 +42,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<GameButton> initGameButtons() {
-    player1 = List();
-    player2 = List();
+    player1 = [];
+    player2 = [];
 
     activePlayer = 1;
 
@@ -62,6 +63,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void playGame(GameButton gb) {
+    print("ACTIVE PLAYER  ${activePlayer}");
+
     setState(() {
       if (activePlayer == 1) {
         gb.text = "X";
@@ -79,6 +82,8 @@ class _HomePageState extends State<HomePage> {
 
       int winner = checkWinner();
 
+      print("BUTTON NO. ${gb.id}");
+
       if (winner == -1) {
         if (buttonList.every((element) => element.text != "")) {
           showDialog(
@@ -87,6 +92,7 @@ class _HomePageState extends State<HomePage> {
                 "Game Tied", "Press reset button to start again.", resetGame),
           );
         } else {
+          //activePlayer == 2 ? autoPlay() : null;
           activePlayer == 2 ? autoPlay() : null;
         }
       }
@@ -94,18 +100,31 @@ class _HomePageState extends State<HomePage> {
   }
 
   void autoPlay() {
-    var emptyCells = List();
+    print("AUTOPLAY");
+
+    var emptyCells = []; //List()
 
     var list = List.generate(9, (index) => index + 1);
 
     for (var cellID in list) {
-      if (player1.contains(cellID) && !player2.contains(cellID)) {
+      if (!player1.contains(cellID) && !player2.contains(cellID)) {
         emptyCells.add(cellID);
+        //print("empty cells added :  ${emptyCells.length}");
+
       }
     }
 
     var r = Random();
+
+    print("empty cells :  ${emptyCells.length}");
+
+    //var randomIndex = r.nextInt(emptyCells.length > 1 ? emptyCells.length-1 : 1); // może zadziała
+
     var randomIndex = r.nextInt(emptyCells.length - 1);
+
+    //var randomIndex = r.nextInt(emptyCells.length);
+
+    print("random index :  ${randomIndex}");
 
     var cellID = emptyCells[randomIndex];
 
@@ -205,6 +224,10 @@ class _HomePageState extends State<HomePage> {
   void resetGame() {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
+      setState(() {
+        buttonList = initGameButtons();
+      });
+    } else {
       setState(() {
         buttonList = initGameButtons();
       });
